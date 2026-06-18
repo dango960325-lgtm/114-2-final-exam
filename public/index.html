@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>圖書推薦系統</title>
+</head>
+<body>
+    <h1>借閱者推薦系統</h1>
+    
+    <h3>借閱者分析(讀者_1~20)</h3>
+    <input type="text" id="borrowerName" placeholder="輸入借閱者姓名">
+    <button onclick="getBorrowerType()">查詢類型</button>
+    <div id="result"></div>
+
+    <script>
+        async function getBorrowerType() {
+            const name = document.getElementById('borrowerName').value;
+            const res = await fetch(`/borrowers/${name}/type`);
+            const data = await res.json();
+            document.getElementById('result').innerHTML = `讀者: ${data.name}, 類型: ${data.type}`;
+        }
+    </script>
+    
+    <hr>
+    <h3>資料檢視</h3>
+    <button onclick="loadData('/api/books')">載入書籍</button>
+    <button onclick="loadData('/api/borrow_records')">載入紀錄</button>
+    <table id="dataTable" border="1" style="margin-top: 10px;"></table>
+
+    <script>
+        async function loadData(endpoint) {
+            const res = await fetch(endpoint);
+            const data = await res.json();
+            const table = document.getElementById('dataTable');
+            // 簡單的表格生成邏輯
+            let html = '<tr>' + Object.keys(data[0] || {}).map(k => `<th>${k}</th>`).join('') + '</tr>';
+            html += data.map(row => `<tr>${Object.values(row).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
+            table.innerHTML = html;
+        }
+    </script>
+
+    
+</body>
+</html>
